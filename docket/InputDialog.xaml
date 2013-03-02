@@ -1,0 +1,10 @@
+﻿<Window x:Class="docket.InputDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding Title}" Height="Auto" MinWidth="300" SizeToContent="WidthAndHeight" Loaded="DialogLoadedEvent">
+    <StackPanel>
+        <TextBlock Text="{Binding Message}" Margin="10,10,10,10" FontWeight="Bold" />
+        <TextBox x:Name="TextBoxArea" Margin="10,10,10,10" Focusable="True"/>
+        <Button Content="OK" Background="White" IsCancel="True" IsDefault="True" Margin="10,10,10,10" />
+    </StackPanel>
+</Window>
