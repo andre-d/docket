@@ -38,6 +38,7 @@ namespace docket
             {
                 StatusLabel.Visibility = Visibility.Visible;
                 StatusLabel.Content = labelText;
+
             }
         }
 
@@ -81,9 +82,9 @@ namespace docket
         {
             var currentScreen = Monitor;
             var screenWidth = currentScreen.WorkingArea.Width;
-            var windowWidth = ActualWidth;
-            Left = currentScreen.WorkingArea.X + (screenWidth / 2.0 - (windowWidth / 2.0));
-            Top = currentScreen.WorkingArea.Y;
+            Width = screenWidth;
+            Top = currentScreen.WorkingArea.Top;
+            Left = currentScreen.WorkingArea.Left;
         }
 
         public void RemoveItem(IconItem item)
@@ -275,9 +276,10 @@ namespace docket
                 return;
             }
             var pos = Win32.GetMousePosition();
+            var p = IconTabs.TransformToVisual(this).Transform(new Point());
             var windowRectangle = new System.Drawing.Rectangle(
-            (int)(Left - (ActualWidth / 2.0)), (int)Top,
-            (int)(ActualWidth * 2), (int)((Visibility == Visibility.Hidden) ? 2 : (ActualHeight * 1.5)));
+            (int)(p.X - (IconTabs.ActualWidth / 2.0)), 0,
+            (int)(IconTabs.ActualWidth * 2), (int)((Visibility == Visibility.Hidden) ? 2 : (ActualHeight * 1.5)));
 
             if (!windowRectangle.Contains(pos.X, pos.Y))
             {
@@ -302,7 +304,7 @@ namespace docket
         public MainWindow()
         {
             InitializeComponent();
-            UseLayoutRounding = true;
+            LabelContainer.UseLayoutRounding = true;
             _isHideSafe = true;
             _timer = new System.Timers.Timer();
             _timer.Interval = 50;

@@ -1,9 +1,9 @@
 ﻿<Window x:Class="docket.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Topmost="True" ResizeMode="NoResize" WindowStartupLocation="Manual" AllowsTransparency="True" WindowStyle="None" Focusable="False" Background="Transparent" SizeToContent="WidthAndHeight" LayoutUpdated="Reworked">
-    <StackPanel>
-        <TabControl x:Name="IconTabs" VerticalAlignment="Top" TabStripPlacement="Bottom" Background="#00000000" BorderThickness="0" AllowDrop="True" Margin="0" Drop="TabItemOnDrop" SelectionChanged="IconTabs_SelectionChanged">
+        Title="MainWindow" Topmost="True" ResizeMode="NoResize" WindowStartupLocation="Manual" AllowsTransparency="True" WindowStyle="None" Focusable="False" Background="Transparent" LayoutUpdated="Reworked" HorizontalAlignment="Center" SizeToContent="Height">
+    <StackPanel HorizontalAlignment="Center">
+        <TabControl x:Name="IconTabs" VerticalAlignment="Top" HorizontalAlignment="Center" TabStripPlacement="Bottom" Background="#00000000" BorderThickness="0" AllowDrop="True" Margin="0" Drop="TabItemOnDrop" SelectionChanged="IconTabs_SelectionChanged">
             <TabControl.Resources>
                 <Style TargetType="{x:Type TabItem}">
 
@@ -48,11 +48,11 @@
                 </Style>
             </TabControl.Resources>
         </TabControl>
-        <StackPanel HorizontalAlignment="Center">
+        <StackPanel x:Name="LabelContainer" HorizontalAlignment="Center">
             <StackPanel.Effect>
                 <DropShadowEffect/>
             </StackPanel.Effect>
-            <Label x:Name="StatusLabel" Foreground="White" FontSize="22" BorderThickness="0">
+            <Label HorizontalContentAlignment="Center" x:Name="StatusLabel" Foreground="White" FontSize="22px" BorderThickness="0" HorizontalAlignment="Center">
                 <Label.Effect>
                     <DropShadowEffect BlurRadius="10" Direction="0" ShadowDepth="0"/>
                 </Label.Effect>
