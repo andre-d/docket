@@ -423,8 +423,6 @@ namespace docket
 
             iml.GetItemFlags(index, ref flags);
 
-            Console.WriteLine(flags);
-
             iml.GetIcon(index, 1, ref handle);
 
             if (handle != IntPtr.Zero)
