@@ -296,7 +296,7 @@ namespace docket
             var pos = Win32.GetMousePosition();
             var p = IconTabs.TransformToVisual(this).Transform(new Point());
             var windowRectangle = new System.Drawing.Rectangle(
-            (int)p.X, (int)p.Y,
+            (int)p.X, (int)Top,
             (int)IconTabs.ActualWidth, (int)((Visibility == Visibility.Hidden) ? 5 : ActualHeight));
 
             if (!windowRectangle.Contains(pos.X, pos.Y))
