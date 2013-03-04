@@ -2,10 +2,10 @@
 
 namespace docket
 {
-    public partial class DockPrefs : Window
+    public partial class DockPrefsDialog : Window
     {
 
-        public DockPrefs(MainWindow window)
+        public DockPrefsDialog(MainWindow window)
         {
             InitializeComponent();
             DataContext = window;

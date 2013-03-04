@@ -8,7 +8,7 @@ namespace docket
         public IconPrefs(IconItem item)
         {
             InitializeComponent();
-            DataContext = item;
+            DataContext = item.Prefs;
         }
     }
 }

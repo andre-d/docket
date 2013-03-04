@@ -3,39 +3,60 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Topmost="True" ResizeMode="NoResize" WindowStartupLocation="Manual" AllowsTransparency="True" WindowStyle="None" Focusable="False" Background="Transparent" SizeToContent="WidthAndHeight" LayoutUpdated="Reworked">
     <StackPanel>
-    <TabControl x:Name="IconTabs" HorizontalAlignment="Center" VerticalAlignment="Top" TabStripPlacement="Bottom" Background="#00000000" BorderThickness="0" AllowDrop="True" Margin="0" Drop="TabItemOnDrop">
-        <TabControl.Resources>
-            <Style TargetType="{x:Type TabPanel}">
-                <Setter Property="HorizontalAlignment" Value="Center" />
-            </Style>
-            <Style TargetType="{x:Type TabItem}">
-                <Setter Property="HorizontalAlignment" Value="Center" />
-                <Setter Property="VerticalAlignment" Value="Center" />
-            </Style>
-            <Style TargetType="{x:Type StackPanel}">
-                <Setter Property="HorizontalAlignment" Value="Center" />
-                <Setter Property="VerticalAlignment" Value="Center" />
-                <Setter Property="Orientation" Value="Horizontal" />
-            </Style>
-        </TabControl.Resources>
-    </TabControl>
-        <StackPanel RenderTransformOrigin="0.5,0.5">
-            <StackPanel.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform/>
-                    <TranslateTransform Y="-10"/>
-                </TransformGroup>
-            </StackPanel.RenderTransform>
+        <TabControl x:Name="IconTabs" VerticalAlignment="Top" TabStripPlacement="Bottom" Background="#00000000" BorderThickness="0" AllowDrop="True" Margin="0" Drop="TabItemOnDrop" SelectionChanged="IconTabs_SelectionChanged">
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}">
+
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type TabItem}">
+                                <Grid>
+                                    <Border 
+              Name="Border"
+              Background="LightBlue"
+              BorderBrush="Black" 
+              BorderThickness="1,1,1,1" 
+              CornerRadius="0,0,6,6">
+                                        <ContentPresenter x:Name="ContentSite"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                ContentSource="Header"
+                Margin="5,2,5,2"/>
+                                    </Border>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="LightBlue" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="False">
+                                        <Setter TargetName="Border" Property="Background" Value="LightGray" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+                <Style TargetType="{x:Type TabPanel}">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                </Style>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="Orientation" Value="Horizontal" />
+                </Style>
+            </TabControl.Resources>
+        </TabControl>
+        <StackPanel HorizontalAlignment="Center">
             <StackPanel.Effect>
                 <DropShadowEffect/>
             </StackPanel.Effect>
-            <Label x:Name="StatusLabel" Foreground="White" FontSize="22" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Top">
-            <Label.Effect>
-                <DropShadowEffect BlurRadius="10" Direction="0" ShadowDepth="0"/>
-            </Label.Effect>
-        </Label>
+            <Label x:Name="StatusLabel" Foreground="White" FontSize="22" BorderThickness="0">
+                <Label.Effect>
+                    <DropShadowEffect BlurRadius="10" Direction="0" ShadowDepth="0"/>
+                </Label.Effect>
+            </Label>
         </StackPanel>
     </StackPanel>
 </Window>

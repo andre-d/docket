@@ -19,28 +19,21 @@ namespace docket
         private const double Hoveropacity = .75;
 
         private bool _mouseClickedDown;
-        private readonly string _statusText;
-        public System.Windows.Controls.Image IconImage;
+        public Image IconImage;
 
-        public bool ShouldRunAsAdmin { get; set; }
-        public string Arguments { get; set; }
-        public string Path { get; set;  }
-        public string RunIn { get; set; }
+        public IconItemPrefs Prefs;
 
         static IconItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof (IconItem), new FrameworkPropertyMetadata(typeof (IconItem)));
         }
 
-        public IconItem(Icon icon, string path)
+        public IconItem(IconItemPrefs prefs)
         {
-            RunIn = "";
-            Arguments = "";
-            Path = path;
+            Prefs = prefs;
 
             IconImage = new Image();
-            _statusText = System.IO.Path.GetFileNameWithoutExtension(path);
-            IconImage.Source = Utils.ConvertBitmapToBitmapImage(Utils.TrimBitmap(icon.ToBitmap()));
+            IconImage.Source = Utils.ConvertBitmapToBitmapImage(Utils.TrimBitmap(Prefs.Icon.ToBitmap()));
             IconImage.Margin = new Thickness(5, 5, 5, 5);
             IconImage.Drop += FileDropped;
             IconImage.MouseUp += IconClicked;
@@ -48,18 +41,21 @@ namespace docket
             IconImage.IsMouseDirectlyOverChanged += MouseOverEvent;
             IconImage.DragEnter += HoverIn;
             IconImage.DragLeave += HoverOut;
-            IconImage.Width = 60;
+            if (Application.Current != null)
+                IconImage.Height = (Application.Current.MainWindow as MainWindow).IconHeight;
             Effect = new DropShadowEffect();
             RenderOptions.SetBitmapScalingMode(IconImage, BitmapScalingMode.HighQuality);
             Children.Add(IconImage);
             ContextMenu = new ContextMenu();
-            var prefsItem = new MenuItem {Header = "Icon Preferences"};
+            var prefsItem = new MenuItem { Header = "Icon Preferences" };
             prefsItem.Click += PrefsItemOnClick;
-            var removeItem = new MenuItem {Header = "Remove"};
+            var removeItem = new MenuItem { Header = "Remove" };
             removeItem.Click += RemoveItemOnClick;
             ContextMenu.Items.Add(prefsItem);
             ContextMenu.Items.Add(removeItem);
         }
+
+        public IconItem(string path) : this(new IconItemPrefs(path)) {}
 
         private void RemoveItemOnClick(object sender, RoutedEventArgs e)
         {
@@ -88,7 +84,7 @@ namespace docket
             var mainWindow = Window.GetWindow(this) as MainWindow;
             if (mainWindow != null)
             {
-                mainWindow.SetLabel(v ? _statusText : null);
+                mainWindow.SetLabel(v ? Prefs.Label : null);
             }
         }
 
@@ -120,18 +116,18 @@ namespace docket
 
         private void Execute(String args = null)
         {
-            var startInfo = new ProcessStartInfo {FileName = Path};
+            var startInfo = new ProcessStartInfo {FileName = Prefs.Path};
             if (args != null)
             {
                 startInfo.Arguments = args;
             }
-            if (ShouldRunAsAdmin)
+            if (Prefs.ShouldRunAsAdmin)
             {
                 startInfo.Verb = "runas";
             }
-            if (RunIn.Length > 0)
+            if (Prefs.RunIn.Length > 0)
             {
-                startInfo.WorkingDirectory = @RunIn;
+                startInfo.WorkingDirectory = @Prefs.RunIn;
             }
             try
             {
@@ -149,7 +145,7 @@ namespace docket
 
                 foreach (var filePath in (paths ?? Enumerable.Empty<string>()))
                 {
-                    var arg = Arguments;
+                    var arg = Prefs.Arguments;
                     if (!arg.Contains("{0}"))
                     {
                         arg += " {0}";

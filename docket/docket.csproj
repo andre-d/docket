@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -52,10 +54,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DockPrefs.xaml.cs">
-      <DependentUpon>DockPrefs.xaml</DependentUpon>
+    <Compile Include="DockPrefs.cs" />
+    <Compile Include="DockPrefsDialog.xaml.cs">
+      <DependentUpon>DockPrefsDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="IconItem.cs" />
+    <Compile Include="IconItemPrefs.cs" />
     <Compile Include="InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>
     </Compile>
@@ -63,7 +67,7 @@
     <Compile Include="IconPrefs.xaml.cs">
       <DependentUpon>IconPrefs.xaml</DependentUpon>
     </Compile>
-    <Page Include="DockPrefs.xaml">
+    <Page Include="DockPrefsDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
