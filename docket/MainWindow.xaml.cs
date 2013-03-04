@@ -19,6 +19,13 @@ namespace docket
     public partial class MainWindow
     {
         private bool _isHideSafe;
+        private bool IsHideSafe
+        {
+            get { return _isHideSafe; }
+            set {
+            _showhideStopWatch.Restart();
+            _isHideSafe = value;
+        } }
         private readonly System.Timers.Timer _timer;
         private readonly Stopwatch _showhideStopWatch;
         private readonly Stopwatch _tabSwitchStopwatch;
@@ -97,6 +104,7 @@ namespace docket
             var stackPanel = item.Parent as StackPanel;
             if (stackPanel != null) stackPanel.Children.Remove(item);
             SerializeToXml();
+            IsHideSafe = true;
         }
 
         public void AddTab(String title)
@@ -139,7 +147,7 @@ namespace docket
                     }
                     IconTabs.Items.Remove(tabItem);
                     SerializeToXml();
-                    _isHideSafe = true;
+                    IsHideSafe = true;
                 };
             quitItem.Header = "Quit";
             quitItem.Click += QuitItemOnClick;
@@ -164,12 +172,12 @@ namespace docket
 
         private void TabItemOnContextMenuOpening(object sender, ContextMenuEventArgs contextMenuEventArgs)
         {
-            _isHideSafe = false;
+            IsHideSafe = false;
         }
 
         private void TabItemOnContextMenuClosing(object sender, ContextMenuEventArgs contextMenuEventArgs)
         {
-            _isHideSafe = true;
+            IsHideSafe = true;
         }
 
         private void TabItemOnDragOver(object sender, DragEventArgs e)
@@ -289,7 +297,7 @@ namespace docket
 
         private void __CheckAutoHide()
         {
-            if (!_isHideSafe)
+            if (!IsHideSafe)
             {
                 return;
             }
@@ -342,9 +350,9 @@ namespace docket
         {
             InitializeComponent();
             LabelContainer.UseLayoutRounding = true;
-            _isHideSafe = true;
             _tabSwitchStopwatch = new Stopwatch();
             _showhideStopWatch = new Stopwatch();
+            IsHideSafe = true;
             _showhideStopWatch.Start();
             _timer = new System.Timers.Timer {Interval = 15};
             _timer.Elapsed += _CheckAutoHide;
