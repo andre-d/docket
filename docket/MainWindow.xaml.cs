@@ -297,7 +297,7 @@ namespace docket
 
         private void __CheckAutoHide()
         {
-            if (!IsHideSafe)
+            if (Visibility != Visibility.Hidden && !IsHideSafe)
             {
                 return;
             }
