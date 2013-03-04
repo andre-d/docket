@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -18,7 +19,10 @@ namespace docket
     public partial class MainWindow
     {
         private bool _isHideSafe;
-        private System.Timers.Timer _timer;
+        private readonly System.Timers.Timer _timer;
+        private readonly Stopwatch _showhideStopWatch;
+        private readonly Stopwatch _tabSwitchStopwatch;
+
         readonly bool _doneLoading;
         private Screen _monitorSelection;
         public Screen[] MonitorList
@@ -148,8 +152,14 @@ namespace docket
             tabItem.ContextMenuClosing += TabItemOnContextMenuClosing;
             tabItem.ContextMenuOpening += TabItemOnContextMenuOpening;
             tabItem.DragOver += TabItemOnDragOver;
+            tabItem.DragLeave += TabItemOnDragLeave;
             tabItem.AllowDrop = true;
             SerializeToXml();
+        }
+
+        private void TabItemOnDragLeave(object sender, DragEventArgs dragEventArgs)
+        {
+            _tabSwitchStopwatch.Stop();
         }
 
         private void TabItemOnContextMenuOpening(object sender, ContextMenuEventArgs contextMenuEventArgs)
@@ -167,8 +177,16 @@ namespace docket
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 e.Effects = DragDropEffects.Copy;
-                IconTabs.SelectedItem = sender;
-                SerializeToXml();
+                if (!_tabSwitchStopwatch.IsRunning)
+                {
+                    _tabSwitchStopwatch.Reset();
+                    _tabSwitchStopwatch.Start();
+                }
+                else if (_tabSwitchStopwatch.ElapsedMilliseconds > 250)
+                {
+                    IconTabs.SelectedItem = sender;
+                    SerializeToXml();
+                }
                 e.Handled = true;
             }
         }
@@ -278,20 +296,39 @@ namespace docket
             var pos = Win32.GetMousePosition();
             var p = IconTabs.TransformToVisual(this).Transform(new Point());
             var windowRectangle = new System.Drawing.Rectangle(
-            (int)(p.X - (IconTabs.ActualWidth / 2.0)), 0,
-            (int)(IconTabs.ActualWidth * 2), (int)((Visibility == Visibility.Hidden) ? 2 : (ActualHeight * 1.5)));
+            (int)p.X, (int)p.Y,
+            (int)IconTabs.ActualWidth, (int)((Visibility == Visibility.Hidden) ? 5 : ActualHeight));
 
             if (!windowRectangle.Contains(pos.X, pos.Y))
             {
-                if(Visibility != Visibility.Hidden)
-                    _hide();
+                if (Visibility != Visibility.Hidden)
+                {
+                    if (_showhideStopWatch.ElapsedMilliseconds > 500)
+                    {
+                        _hide();
+                    }
+                }
+                else
+                {
+                    _showhideStopWatch.Restart();
+                }
             }
             else
             {
                 if (Visibility == Visibility.Hidden)
-                    _show();
+                {
+                    if (_showhideStopWatch.ElapsedMilliseconds > 250)
+                    {
+                        _show();
+                    }
+                }
+                else
+                {
+                    _showhideStopWatch.Restart();
+                }
             }
-           
+
+
         }
 
         private void _CheckAutoHide(object sender, EventArgs eventArgs)
@@ -306,8 +343,10 @@ namespace docket
             InitializeComponent();
             LabelContainer.UseLayoutRounding = true;
             _isHideSafe = true;
-            _timer = new System.Timers.Timer();
-            _timer.Interval = 50;
+            _tabSwitchStopwatch = new Stopwatch();
+            _showhideStopWatch = new Stopwatch();
+            _showhideStopWatch.Start();
+            _timer = new System.Timers.Timer {Interval = 15};
             _timer.Elapsed += _CheckAutoHide;
             _timer.Enabled = true;
             ShowInTaskbar = false;
