@@ -9,6 +9,42 @@ namespace docket
     {
         public int IconHeight { get; set; }
 
+        public bool? AutoHide
+        {
+            get;
+            set;
+        }
+
+        public bool? AutoHideWholeWidth
+        {
+            get;
+            set;
+        }
+
+        public int? HideDelay
+        {
+            get;
+            set;
+        }
+
+        public int? ShowDelay
+        {
+            get;
+            set;
+        }
+
+        public int? ShowEaseTime
+        {
+            get;
+            set;
+        }
+
+        public int? HideEaseTime
+        {
+            get;
+            set;
+        }
+
         public int SelectedTab
         {
             get;

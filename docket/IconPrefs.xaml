@@ -24,6 +24,6 @@
         <TextBox Grid.Row="3" Grid.Column="1" TextWrapping="Wrap" Text="{Binding RunIn}" VerticalAlignment="Center" />
         <Label Grid.Row="4" Grid.Column="0"  Content="Label" VerticalAlignment="Center"/>
         <TextBox Grid.Row="4" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Label}" VerticalAlignment="Center" />
-        <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Content="Ok" IsCancel="True" IsDefault="True" Margin="0,5,0,5" Height="25" Background="White" />
+        <Button Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" Width="100" Content="OK" IsCancel="True" IsDefault="True" Margin="0,5,0,5" Height="25" HorizontalAlignment="Right" />
     </Grid>
 </Window>

@@ -5,6 +5,6 @@
     <StackPanel>
         <TextBlock Text="{Binding Message}" Margin="10,10,10,10" FontWeight="Bold" />
         <TextBox x:Name="TextBoxArea" Margin="10,10,10,10" Focusable="True"/>
-        <Button Content="OK" Background="White" IsCancel="True" IsDefault="True" Margin="10,10,10,10" />
+        <Button Content="OK" Width="100" HorizontalAlignment="Right" IsCancel="True" Height="25" IsDefault="True" Margin="10,10,10,10" />
     </StackPanel>
 </Window>

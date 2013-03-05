@@ -5,6 +5,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using System.Xml.Serialization;
 using Application = System.Windows.Application;
@@ -26,6 +28,8 @@ namespace docket
             _showhideStopWatch.Restart();
             _isHideSafe = value;
         } }
+
+        private bool _hidden;
         private readonly System.Timers.Timer _timer;
         private readonly Stopwatch _showhideStopWatch;
         private readonly Stopwatch _tabSwitchStopwatch;
@@ -37,7 +41,52 @@ namespace docket
             get { return Screen.AllScreens; }
         }
 
-        public int IconHeight { get; set; }
+        private int _iconHeight;
+        public int IconHeight { get { return _iconHeight; } set { _iconHeight = value; SerializeToXml(); } }
+
+        private int? _hideDelay;
+        public int HideDelay { get { return _hideDelay ?? 500; }
+            set { _hideDelay = value; SerializeToXml(); }
+        }
+
+        private int? _hideEaseTime;
+        public int HideEaseTime
+        {
+            get { return _hideEaseTime ?? 250; }
+            set { _hideEaseTime = value; SerializeToXml(); }
+        }
+
+        private int? _showEaseTime;
+        public int ShowEaseTime
+        {
+            get { return _showEaseTime ?? 250; }
+            set { _showEaseTime = value; SerializeToXml(); }
+        }
+
+        private int? _showDelay;
+        public int ShowDelay
+        {
+            get { return _showDelay ?? 250; }
+            set { _showDelay = value; SerializeToXml(); }
+        }
+
+        private bool? _autoHide;
+        public bool AutoHide
+        {
+            get { return _autoHide ?? true; }
+            set { _autoHide = value; SerializeToXml(); }
+        }
+
+        private bool? _autoHideWholeWidth;
+        public bool AutoHideWholeWidth
+        {
+            get { return _autoHideWholeWidth ?? true; }
+            set
+            {
+                _autoHideWholeWidth = value;
+                SerializeToXml();
+            }
+        }
 
         public void SetLabel(String labelText)
         {
@@ -222,11 +271,16 @@ namespace docket
             var deserializer = new XmlSerializer(typeof(DockPrefs));
             TextReader textReader = new StreamReader(@"docket.xml");
             var prefs = deserializer.Deserialize(textReader) as DockPrefs;
+            textReader.Close();
             if (prefs == null)
             {
                 return;
             }
-            textReader.Close();
+            _showDelay = prefs.ShowDelay;
+            _showEaseTime = prefs.ShowEaseTime;
+            _hideDelay = prefs.HideDelay;
+            _hideEaseTime = prefs.HideEaseTime;
+            _autoHide = prefs.AutoHide;
             if (prefs.MonitorNumber < MonitorList.Count())
             {
                 Monitor = MonitorList[prefs.MonitorNumber];
@@ -257,6 +311,12 @@ namespace docket
             var serializer = new XmlSerializer(typeof(DockPrefs));
             TextWriter textWriter = new StreamWriter(@"docket.xml", false);
             var dockPrefs = new DockPrefs { MonitorNumber = Array.IndexOf(MonitorList, Monitor), SelectedTab = IconTabs.SelectedIndex, IconHeight = IconHeight};
+            dockPrefs.ShowDelay = ShowDelay;
+            dockPrefs.HideDelay = HideDelay;
+            dockPrefs.HideEaseTime = HideEaseTime;
+            dockPrefs.ShowEaseTime = ShowEaseTime;
+            dockPrefs.AutoHide = AutoHide;
+            dockPrefs.AutoHideWholeWidth = AutoHideWholeWidth;
             foreach (TabItem tabItem in IconTabs.Items)
             {
                 var header = tabItem.Header;
@@ -287,17 +347,30 @@ namespace docket
 
         private void _hide()
         {
-            Visibility = Visibility.Hidden;
+            _hidden = true;
+            var anim = new DoubleAnimation(0, -IconTabs.ActualHeight, TimeSpan.FromMilliseconds(HideEaseTime)) { EasingFunction = new SineEase() };
+            IconTabs.RenderTransform = new TranslateTransform();
+            IconTabs.RenderTransform.BeginAnimation(TranslateTransform.YProperty, anim);
+            anim.Completed += (sender, args) => { Visibility = Visibility.Hidden; };
         }
 
         private void _show()
         {
+            _hidden = false;
             Visibility = Visibility.Visible;
+            var anim = new DoubleAnimation(-IconTabs.ActualHeight, 0, TimeSpan.FromMilliseconds(ShowEaseTime)) { EasingFunction = new SineEase() };
+            IconTabs.RenderTransform =  new TranslateTransform();
+            IconTabs.RenderTransform.BeginAnimation(TranslateTransform.YProperty, anim);
         }
 
         private void __CheckAutoHide()
         {
-            if (Visibility != Visibility.Hidden && !IsHideSafe)
+            if (!AutoHide && _hidden)
+            {
+                _show();
+                return;
+            }
+            if (!AutoHide || (!_hidden && !IsHideSafe))
             {
                 return;
             }
@@ -305,14 +378,19 @@ namespace docket
             var p = IconTabs.TransformToVisual(this).Transform(new Point());
             var windowRectangle = new System.Drawing.Rectangle(
             (int)p.X, (int)Top,
-            (int)IconTabs.ActualWidth, (int)((Visibility == Visibility.Hidden) ? 5 : ActualHeight));
-
+            (int)IconTabs.ActualWidth, (int)((_hidden) ? 5 : ActualHeight));
+            if (AutoHideWholeWidth)
+            {
+                windowRectangle.X = (int)Left;
+                windowRectangle.Width = (int)ActualWidth;
+            }
             if (!windowRectangle.Contains(pos.X, pos.Y))
             {
-                if (Visibility != Visibility.Hidden)
+                if (!_hidden)
                 {
-                    if (_showhideStopWatch.ElapsedMilliseconds > 500)
+                    if (_showhideStopWatch.ElapsedMilliseconds > HideDelay)
                     {
+
                         _hide();
                     }
                 }
@@ -323,9 +401,9 @@ namespace docket
             }
             else
             {
-                if (Visibility == Visibility.Hidden)
+                if (_hidden)
                 {
-                    if (_showhideStopWatch.ElapsedMilliseconds > 250)
+                    if (_showhideStopWatch.ElapsedMilliseconds > ShowDelay)
                     {
                         _show();
                     }
